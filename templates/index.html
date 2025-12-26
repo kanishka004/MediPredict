@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediPredict: Health Risk Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="logo-container">
+            <img src="{{ url_for('static', filename='img/logo-copy.png') }}" alt="MediPredict Logo" class="logo-icon">
+            <div class="logo-text">
+                <strong>MediPredict</strong>: Health Risk Analysis
+            </div>
+        </div>
+        <div class="nav-actions">
+            {% if current_user %}
+            <span>Hi, {{ current_user.name }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('signup') }}">Sign up</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="hero-section">
+        <div class="hero-image-overlay">
+        </div>
+
+        <div class="content-card">
+            <h1 class="card-title">Predict Today, Protect Tomorrow</h1>
+            <p class="card-description">
+                MediPredict is a health risk analysis and prediction system that leverages data-driven techniques to
+                evaluate vital health parameters. It provides early insights into potential health risks, enabling users
+                to take preventive measures in advance.
+            </p>
+            <a href="{{ url_for('user_input') }}" class="btn-start-prediction">Start Prediction</a>
+        </div>
+    </main>
+
+
+    <!-- SECOND SECTION (WHO REFERENCE NOTE) -->
+    <section class="who-reference">
+        <div class="who-box">
+            <p class="note">
+                <strong>Note:</strong> The health parameter ranges and risk classifications used in this project are
+                based on guidelines and standards published by the World Health Organization (WHO).
+            </p>
+
+            <div class="who-img">
+                <img src="{{ url_for('static', filename='img/WHOlogo.jpg') }}" alt="WHO Logo">
+            </div>
+
+            <p class="disclaimer">
+                Data and reference ranges are derived from the official publications and fact sheets of the World Health
+                Organization (WHO).<br>
+                <strong>Disclaimer:</strong> The disease risk ranges and health standards used in this project are
+                referenced from official guidelines provided by the World Health Organization (WHO).
+            </p>
+
+            <div class="references">
+                <p><strong>Hypertension (Blood Pressure)</strong> fact sheet:
+                    <a href="https://www.who.int/news-room/fact-sheets/detail/hypertension"
+                        target="_blank">https://www.who.int/news-room/fact-sheets/detail/hypertension</a>
+                </p>
+                <p><strong>Cholesterol (Mean Total Cholesterol)</strong> indicator metadata:
+                    <a href="https://www.who.int/data/gho/indicator-metadata-registry/imr-details/2384"
+                        target="_blank">https://www.who.int/data/gho/indicator-metadata-registry/imr-details/2384</a>
+                </p>
+                <p>
+                    <a href="https://in.docworkspace.com/d/sIL-O2ZFVIbyHyAY?sa=601.1074"
+                        target="_blank">https://in.docworkspace.com/d/sIL-O2ZFVIbyHyAY?sa=601.1074</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login - MediPredict</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="input-page-body">
+  <header class="navbar">
+    <div class="logo-container">
+      <a href="{{ url_for('root') }}"><img src="{{ url_for('static', filename='img/logo-copy.png') }}" alt="logo" class="logo-icon"></a>
+      <div class="logo-text">MediPredict: Health Risk Analysis</div>
+    </div>
+    <div class="nav-actions">
+      <a href="{{ url_for('signup') }}">Sign up</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="form-card">
+      <h2>Login</h2>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, msg in messages %}
+              <div class="alert {{ category }}">{{ msg }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="post" action="{{ url_for('login', next=next) }}">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ email|default('') }}" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit">Login</button>
+      </form>
+
+      <p>Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a>.</p>
+    </section>
+  </main>
+</body>
+</html>

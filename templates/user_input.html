@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediPredict: Enter Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="input-page-body">
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo-copy.png') }}"
+                    alt="MediPredict Logo" class="logo-icon"></a>
+            <div class="logo-text">
+                <strong>MediPredict</strong>: Health Risk Analysis
+            </div>
+        </div>
+    </header>
+
+    <main class="input-container">
+        <form class="details-form" id="details-form" method="POST" action="{{ url_for('prediction') }}">
+            <h2>Enter your health details:-</h2>
+
+            <section class="form-section">
+                <h3>Personal Details</h3>
+
+                <div class="input-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your name">
+
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" min="1" max="120" required>
+                </div>
+
+                <div class="radio-group gender-group">
+                    <label>Gender</label>
+                    <div>
+                        <label><input type="radio" name="gender" value="male" required> Male</label>
+                        <label><input type="radio" name="gender" value="female"> Female</label>
+                    </div>
+                </div>
+
+
+                <div class="input-group">
+                    <label for="height">Height (cm)</label>
+                    <input type="number" id="height" name="height" min="50" required>
+
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" id="weight" name="weight" min="1" required>
+                </div>
+            </section>
+
+            <hr class="form-divider">
+
+            <section class="form-section">
+                <h3>Medical Details</h3>
+
+                <div class="input-group">
+                    <label for="bp">Blood Pressure</label>
+                    <input type="text" id="bp" name="blood_pressure" placeholder="e.g., 120/80" required>
+
+                    <label for="cholesterol">Cholesterol Level</label>
+                    <select id="cholesterol" name="cholesterol_level" required>
+                        <option value="" disabled selected>Select Level</option>
+                        <option value="normal">Normal</option>
+                        <option value="borderline">Borderline</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="sugar_level">Blood Sugar</label>
+                    <select id="sugar_level" name="blood_sugar" required>
+                        <option value="" disabled selected>Select Level</option>
+                        <option value="normal">Normal</option>
+                        <option value="prediabetic">Prediabetic</option>
+                        <option value="diabetic">Diabetic</option>
+                    </select>
+                </div>
+            </section>
+
+            <hr class="form-divider">
+
+            <section class="form-section">
+                <h3>Lifestyle Habits</h3>
+
+                <div class="radio-group">
+                    <label>Sleep (hrs)</label>
+                    <input type="number" id="sleep_hrs" name="sleep_hrs" min="1" max="24" placeholder="e.g., 7"
+                        required>
+                </div>
+
+                <div class="radio-group">
+                    <label>Exercise</label>
+                    <label><input type="radio" name="exercise" value="none"> None</label>
+                    <label><input type="radio" name="exercise" value="high"> High</label>
+                    <label><input type="radio" name="exercise" value="moderate"> Moderate</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Smoking</label>
+                    <label><input type="radio" name="smoking" value="no" checked> No</label>
+                    <label><input type="radio" name="smoking" value="yes"> Yes</label>
+                    <label><input type="radio" name="smoking" value="occasionally"> Occasionally</label>
+                </div>
+
+                <div class="radio-group">
+                    <label>Alcohol</label>
+                    <label><input type="radio" name="alcohol" value="no" checked> No</label>
+                    <label><input type="radio" name="alcohol" value="yes"> Yes</label>
+                    <label><input type="radio" name="alcohol" value="occasionally"> Occasionally</label>
+                </div>
+            </section>
+
+        </form>
+
+        <div class="prediction-area">
+            <div class="prediction-image-placeholder">
+
+
+                <img src="{{ url_for('static', filename='img/prediction-img.jpg') }}" alt="MediPredict Logo"
+                    class="logo-icon">
+
+            </div>
+
+            <button type="submit" onsubmit="{{ url_for('prediction') }}" form="details-form" class="btn-predict-risk">
+                Predict My Risk
+            </button>
+        </div>
+
+    </main>
+
+</body>
+
+</html>

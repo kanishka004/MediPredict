@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediPredict: Health Analysis Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="results-page-body">
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo-copy.png') }}"
+                    alt="MediPredict Logo" class="logo-icon"></a>
+            <div class="logo-text">
+                <strong>MediPredict</strong>: Health Risk Analysis
+            </div>
+        </div>
+    </header>
+
+    <main class="results-container">
+
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="user-avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <h3 class="profile-name">{{ data.name if data and data.name else "Guest" }}</h3>
+                <p class="profile-details">{{ data.age if data and data.age else "?" }} years</p>
+
+                <div class="user-vitals">
+                    <div class="vital-box">
+                        <i class="fas fa-weight-scale"></i>
+                        <span>Weight</span>
+                        <strong>{{ data.weight if data and data.weight else "?" }}kg</strong>
+                    </div>
+                    <div class="vital-box">
+                        <i class="fas fa-ruler-vertical"></i>
+                        <span>Height</span>
+                        <strong>{{ data.height if data and data.height else "?" }}cm</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommendations-box">
+                <div class="card p-3 mt-4 shadow">
+                    <h4>Personalized Recommendations</h4>
+                    <p><strong>Overall:</strong> {{data.overall_rec}}</p>
+                    <p><strong>CRD:</strong> {{data.crd_rec}}</p>
+                    <p><strong>Heart Disease:</strong> {{data.hd_rec}}</p>
+                    <p><strong>Diabetes:</strong> {{data.diabetes_rec}}</p>
+                    <p><strong>Liver Damage:</strong> {{data.liver_rec}}</p>
+                </div>
+
+            </div>
+        </aside>
+
+        <section class="main-results-area">
+
+            <div class="welcome-banner">
+                <div class="welcome-text">
+                    <h1>Hello, <span>{{ data.name if data and data.name else "Friend" }}</span></h1>
+                    <p>Have a nice day and don't forget to take care of your health!</p>
+                </div>
+                <div class="doctor-image-placeholder">
+                    <img src="{{ url_for('static', filename='img/doctor.jpg') }}" alt="doctorImg">
+                </div>
+            </div>
+
+            <div class="key-indicators-bar">
+                <div class="indicator-item">
+                    <i class="fas fa-heartbeat icon-bp"></i>
+                    <p>BP: <strong>{{ data.blood_pressure if data and data.blood_pressure else '?' }}</strong></p>
+                </div>
+                <div class="indicator-item">
+                    <i class="fas fa-water icon-sugar"></i>
+                    <p>SUGAR: <strong>{{ data.blood_sugar if data and data.blood_sugar else '?' }}</strong></p>
+                </div>
+                <div class="indicator-item">
+                    <i class="fas fa-heart icon-cholesterol"></i>
+                    <p>CHOLESTEROL: <strong>{{ data.cholesterol_level if data and data.cholesterol_level else '?'
+                            }}</strong></p>
+                </div>
+                <div class="indicator-item">
+                    <i class="fas fa-weight icon-bmi"></i>
+                    <p>BMI: <strong>{{ data.BMI }}</strong></p>
+                    <p>{{data.BMI_Category}}</p>
+                </div>
+            </div>
+
+            <h3 class="chart-heading">General Health</h3>
+
+            <div class="charts-area">
+                <!-- Chart.js (only once, ensure you have this included before using Chart) -->
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+                <div class="chart-container" style="width:42%; margin:auto; margin-top:24px; position:relative;">
+                    <canvas id="overallDonutChart"></canvas>
+                    <div id="donutCenterText"
+                        style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center;">
+                        <div id="donutPercent" style="font-weight:700; font-size:18px; color:#222;"></div>
+                        <div id="donutLabel" style="font-size:12px; color:#666;"></div>
+                    </div>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // Values passed from Flask (numbers)
+                        const avgRiskPercent = {{ data.avg_risk_percent | default (0)
+                    }};
+                    const overallHealthPercent = {{ data.overall_health_percent | default (100) }};
+
+                    // Choose primary color based on avgRiskPercent thresholds
+                    function pickColor(p) {
+                        if (p <= 33.0) return "#2ecc71";   // green
+                        if (p <= 66.0) return "#f1c40f";   // yellow
+                        return "#e74c3c";                  // red
+                    }
+
+                    const riskColor = pickColor(avgRiskPercent);
+
+                    const ctxDonut = document.getElementById("overallDonutChart").getContext("2d");
+                    const donut = new Chart(ctxDonut, {
+                        type: "doughnut",
+                        data: {
+                            labels: ["Risk Level", "Remaining Health"],
+                            datasets: [{
+                                data: [avgRiskPercent, overallHealthPercent],
+                                backgroundColor: ["#dd3445", "#caced3"],
+                                borderColor: ["rgba(0,0,0,0.06)", "rgba(0,0,0,0.06)"],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,  // ✅ makes chart responsive
+                            cutout: "68%",
+                            layout: {
+                                padding: { top: 10, bottom: 10 }
+                            },
+                            plugins: {
+                                legend: { position: "bottom" },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (ctx) {
+                                            return `${ctx.label}: ${ctx.raw}%`;
+                                        }
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: "Overall Health",
+                                    padding: { top: 6, bottom: 6 }
+                                }
+                            },
+                            animation: { animateRotate: true, animateScale: true }
+                        }
+                    });
+
+                    // Center text update
+                    document.getElementById("donutPercent").innerText = `${avgRiskPercent}% Risk`;
+                    document.getElementById("donutLabel").innerText = `${overallHealthPercent}% Remaining Health`;
+});
+                </script>
+
+
+
+                <!-- ===== BAR CHART ===== -->
+                <div class="chart-container" style="width:70%; margin:auto;">
+                    <canvas id="riskChart"></canvas>
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const riskValues = {{ data.risk_values | tojson
+                    }};
+                    const diseases = ["CRD", "Heart Disease", "Diabetes", "Liver Damage"];
+
+                    function riskColor(val) {
+                        if (val === 0) return "green";
+                        if (val === 1) return "#a0c5fe";
+                        return "#dc3545";
+                    }
+
+                    const barColors = riskValues.map(v => riskColor(v));
+                    const ctx = document.getElementById("riskChart").getContext("2d");
+
+                    new Chart(ctx, {
+                        type: "bar",
+                        data: {
+                            labels: diseases,
+                            datasets: [{
+                                label: "Risk Level (0=Low, 1=Medium, 2=High)",
+                                data: riskValues,
+                                backgroundColor: barColors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 2,
+                                    ticks: { stepSize: 1 }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                title: {
+                                    display: true,
+                                    text: "Risk Level(0=Low, 1=Medium, 2=High) for Various Diseases"
+                                }
+                            }
+                        }
+                    });
+});
+                </script>
+            </div>
+
+            <!-- ==== User prediction history table (latest first) ==== -->
+            <h4 style="text-align:center; margin-top:22px; font-size: 20px;">Your Recent Predictions</h4>
+
+            <div style="width:90%; margin: 10px auto;">
+                <table id="historyTable" class="history-table">
+                    <thead>
+                        <tr style="background:#f7f7f7;">
+                            <th style="padding:8px; text-align:left;">#</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-regular fa-calendar"></i> Date</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-solid fa-star"></i> Overall</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-solid fa-lungs"></i> CRD</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-solid fa-heart"></i> Heart</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-solid fa-syringe"></i> Diabetes</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-solid fa-vial-virus"></i> Liver</th>
+                            <th style="padding:8px; text-align:left;"><i class="fa-solid fa-check"></i>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if history %}
+                        {% for rec in history %}
+                        <tr>
+                            <td data-label="#">{{ loop.index }}</td>
+
+                            <td data-label="Date">
+                                {% if rec.timestamp_ist_str %}
+                                {{ rec.timestamp_ist_str }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+
+                            {% if rec.predictions %}
+                            <td data-label="Overall">{{ rec.predictions.overall_risk }}</td>
+                            <td data-label="CRD">{{ rec.predictions.crd_risk }}</td>
+                            <td data-label="Heart">{{ rec.predictions.heart_risk }}</td>
+                            <td data-label="Diabetes">{{ rec.predictions.diabetes_risk }}</td>
+                            <td data-label="Liver">{{ rec.predictions.liver_risk }}</td>
+                            {% else %}
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            {% endif %}
+
+                            <td data-label="Select">
+                                <input type="checkbox" class="compare-checkbox" data-idx="{{ loop.index0 }}">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="8">No previous predictions found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+
+                </table>
+
+                <div style="margin-top:12px; text-align:center;">
+                    <button id="compareBtn" class="compareBtn"
+                        style="padding:8px 14px; cursor:pointer; background-color: #e7f6ff; border:1px solid #9e9e9e; border-radius:4px;">
+                        Compare selected (max 2)
+                    </button>
+                </div>
+
+                <div id="comparisonPanel"
+                    style="width:90%; margin:18px auto; display:none; border:1px solid #eee; padding:12px;">
+                    <h4>Comparison of previous predictions</h4>
+                    <div id="comparisonTable"></div>
+                </div>
+            </div>
+
+            <script>
+                // read history into JS-friendly structure
+                const history = {{ history | tojson | safe }};
+
+                function formatPred(rec) {
+                    return {
+                        // prefer server-side preformatted IST string (falls back to raw timestamp)
+                        ts: rec.timestamp_ist_str ? rec.timestamp_ist_str : (rec.timestamp ? rec.timestamp : null),
+                        overall: rec.predictions ? rec.predictions.overall_risk : null,
+                        crd: rec.predictions ? rec.predictions.crd_risk : null,
+                        heart: rec.predictions ? rec.predictions.heart_risk : null,
+                        diabetes: rec.predictions ? rec.predictions.diabetes_risk : null,
+                        liver: rec.predictions ? rec.predictions.liver_risk : null,
+                        risk_values: rec.predictions ? rec.predictions.risk_values : []
+                    };
+                }
+
+                document.getElementById('compareBtn').addEventListener('click', function () {
+                    const checked = Array.from(document.querySelectorAll('.compare-checkbox:checked'));
+                    if (checked.length === 0) {
+                        alert('Select 1 or 2 predictions to compare.');
+                        return;
+                    }
+                    if (checked.length > 2) {
+                        alert('Please select at most 2 records to compare.');
+                        return;
+                    }
+                    // build comparison
+                    const idxs = checked.map(cb => parseInt(cb.getAttribute('data-idx')));
+                    const recs = idxs.map(i => history[i]);
+                    const left = formatPred(recs[0]);
+                    const right = recs[1] ? formatPred(recs[1]) : null;
+
+                    let html = '<table style="width:100%; border-collapse:collapse;">';
+                    html += '<tr><th style="padding:8px;"></th><th style="padding:8px;">1</th>';
+                    if (right) html += '<th style="padding:8px;">2</th>';
+                    html += '</tr>';
+
+                    function row(k, label) {
+                        html += '<tr>';
+                        html += `<td style="padding:8px; font-weight:600;">${label}</td>`;
+                        html += `<td style="padding:8px;">${left[k] !== undefined ? left[k] : ''}</td>`;
+                        if (right) html += `<td style="padding:8px;">${right[k] !== undefined ? right[k] : ''}</td>`;
+                        html += '</tr>';
+                    }
+
+                    row('ts', 'Timestamp');
+                    row('overall', 'Overall Risk');
+                    row('crd', 'CRD Risk');
+                    row('heart', 'Heart Risk');
+                    row('diabetes', 'Diabetes Risk');
+                    row('liver', 'Liver Risk');
+
+                    html += '</table>';
+                    document.getElementById('comparisonTable').innerHTML = html;
+                    document.getElementById('comparisonPanel').style.display = 'block';
+                    // scroll to comparison panel
+                    document.getElementById('comparisonPanel').scrollIntoView({ behavior: 'smooth' });
+                });
+            </script>
+
+
+            <!-- </div> -->
+            <!-- <div class="risk-results">
+                Overall Risk Level: {{ data['overall_risk'] }}<br>
+                CRD Risk: {{ data['crd_risk'] }}<br>
+                Heart Disease Risk: {{ data['hd_risk'] }}<br>
+                Diabetes Risk: {{ data['diabetes_risk'] }}<br>
+                Liver Damage Risk: {{ data['liver_risk'] }}
+            </div> -->
+            <!-- <p>{{ data }}</p> -->
+        </section>
+    </main>
+</body>
+
+</html>
