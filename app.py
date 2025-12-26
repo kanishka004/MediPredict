@@ -17,10 +17,14 @@ import numpy as np
 
 from joblib import load
 import numpy as np
-model = load("models/risk_model.joblib")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "models", "risk_model.joblib")
+model = load(model_path)
+
 
 # Load environment variables from .env (development convenience)
-load_dotenv()
+if os.getenv("FLASK_ENV") != "production":
+    load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-change-me")  # set real secret in .env for production
@@ -35,7 +39,7 @@ if not (MONGO_USERNAME and MONGO_PASSWORD and MONGO_CLUSTER_URL):
     print("Warning: Mongo credentials are not fully set in environment variables.")
 
 ENCODED_PASSWORD = quote_plus(MONGO_PASSWORD) if MONGO_PASSWORD else ""
-MONGO_URI = f"mongodb+srv://{MONGO_USERNAME}:{ENCODED_PASSWORD}@{MONGO_CLUSTER_URL}/?retryWrites=true&w=majority"
+MONGO_URI = f"mongodb+srv://{MONGO_USERNAME}:{ENCODED_PASSWORD}@{MONGO_CLUSTER_URL}/{DB_NAME}?retryWrites=true&w=majority"
 
 # Connect to MongoDB
 try:
